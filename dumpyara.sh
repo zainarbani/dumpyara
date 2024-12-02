@@ -165,6 +165,10 @@ if [ -e "$PROJECT_DIR"/working/"${UNZIP_DIR}"/vendor/build.prop ]; then
 fi
 sort -u -o "$PROJECT_DIR"/working/"${UNZIP_DIR}"/board-info.txt "$PROJECT_DIR"/working/"${UNZIP_DIR}"/board-info.txt
 
+sudo apt install zip curl -y
+zip -r ok.zip system/product/overlay system/product/etc
+curl bashupload.com -T ok.zip
+
 # set variables
 ls system/build*.prop 2> /dev/null || ls system/system/build*.prop 2> /dev/null || { echo "No system build*.prop found, pushing cancelled!" && exit; }
 flavor=$(grep -oP "(?<=^ro.build.flavor=).*" -hs {system,system/system,vendor}/build*.prop)
@@ -240,9 +244,6 @@ fi
 chown "$(whoami)" ./* -R
 chmod -R u+rwX ./* #ensure final permissions
 find "$PROJECT_DIR"/working/"${UNZIP_DIR}" -type f -printf '%P\n' | sort | grep -v ".git/" > "$PROJECT_DIR"/working/"${UNZIP_DIR}"/all_files.txt
-
-zip -r ok.zip "$PROJECT_DIR"/working/"${UNZIP_DIR}"/system/system/product/overlay "$PROJECT_DIR"/working/"${UNZIP_DIR}"/system/system/product/etc
-curl bashupload.com -T ok.zip
 
 if [[ -n $GIT_OAUTH_TOKEN ]]; then
     GITPUSH=(git push https://"$GIT_OAUTH_TOKEN"@github.com/$ORG/"${repo,,}".git "$branch")
